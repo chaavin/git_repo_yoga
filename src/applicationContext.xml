@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<!-- ######### BEANS ############# -->
+	
+	<!-- ############ AUTHENTICATION AND AUTHORIZATION BEAN ################  -->
+
+	<bean id="securityManagerBean"
+		class="com.cha.allen.app.webapps.manager.SecurityManagerImpl">
+		<property name="userAndGroupDataDao" ref="userAndGroupDataDaoBean" />
+		<property name="ldapSearch" ref="ldapSearch" />
+	</bean>
+	
+	<bean id="ldapSearch"
+		class="com.cha.allen.app.webapps.utility.LdapSearchImpl" init-method="init" scope="singleton">
+		<property name="sslEnabled" value="${sslEnabled}" />
+		<property name="principal" value="${principal}" />
+		<property name="credentials" value="${credentials}" />
+		<property name="server" value="${server}" />
+		<property name="port" value="${port}" />
+		<property name="securityAuthentication" value="${securityAuthentication}" />
+		<property name="refferal" value="${refferal}" />
+		<property name="memberAttributeName" value="${memberAttributeName}" />
+		<property name="keyStoreLocation" value="${keyStoreLocation}" />
+		<property name="initialContextFactory" value="${initialContextFactory}" />
+		<property name="socketFactoryProvider" value="${socketFactoryProvider}" />
+		<property name="serverSocketFactoryProvider" value="${serverSocketFactoryProvider}" />
+		<property name="userSearchBaseDn" value="${userSearchBaseDn}" />
+		<property name="userFilter" value="${userFilter}" />
+		<property name="nameAttributes" value="${nameAttributes}" />
+		<property name="domain" value="${domain}" />
+	</bean>
+	
+	<bean id="userAndGroupDataDaoBean"
+		class="com.cha.allen.app.webapps.dao.UserAndGroupDataDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sqlLoader" ref="SqlLoaderBean" />
+	</bean>
+	
+	<!-- ############ BREACH MANAGEMENT RELATED BEANS ################  -->
+	<bean id="BreachReportManagerBean"
+		class="com.cha.allen.app.webapps.manager.BreachReportManagerImpl">
+		<property name="computedMetricDao" ref="computedMetricDaoBean" />
+		<property name="policyDao" ref="policyDaoBean" />
+	</bean>
+
+	<bean id="computedMetricDaoBean"
+		class="com.cha.allen.app.webapps.dao.ComputedMetricDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sqlLoader" ref="SqlLoaderBean" />
+	</bean>
+	
+	<bean id="BreachReportViewHelper"
+		class="com.cha.allen.app.webapps.web.viewhelper.BreachReportViewHelper">
+		<property name="policyDao" ref="policyDaoBean" />		
+	</bean>
+
+	<!-- ############ ANALYST DASHBOARD RELATED BEANS ################  -->
+
+	<bean id="AnalystDashboardManager"
+		class="com.cha.allen.app.webapps.manager.AnalystDashboardManagerImpl">
+		<property name="analystDashboardDao" ref="AnalystDashboardDao" />
+	</bean>
+
+	<bean id="AnalystDashboardDao"
+		class="com.cha.allen.app.webapps.dao.AnalystDashboardDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sqlLoader" ref="SqlLoaderBean" />
+	</bean>
+
+	<!-- ############ TRADE RELATED BEANS ################  -->
+	<bean id="TradeApplicationManager"
+		class="com.cha.allen.app.webapps.manager.TradeDataManagerImpl">
+		<property name="tradeDataDao" ref="tradeDataDaoBean" />
+		<property name="policyDao" ref="policyDaoBean" />
+		<property name="discardDataDao" ref="DiscardDataDaoBean" />
+	</bean>
+
+	<bean id="tradeDataDaoBean"
+		class="com.cha.allen.app.webapps.dao.TradeDataDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sqlLoader" ref="SqlLoaderBean" />
+	</bean>
+
+	<bean id="TradeViewHelper"
+		class="com.cha.allen.app.webapps.web.viewhelper.TradeDataViewHelper">
+		<property name="tradeDataViewManager"
+			ref="TradeDataViewManager" />
+	</bean>
+
+	<bean id="TradeDataViewManager"
+		class="com.cha.allen.app.webapps.manager.TradeStaticDataViewManagerImpl">
+		<property name="staticDataDao" ref="staticDataDaoBean" />
+	</bean>
+
+	<!-- ############ POLICY RELATED BEANS ################  -->
+	<bean id="policyDaoBean"
+		class="com.cha.allen.app.common.dao.PolicyDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sqlLoader" ref="SqlLoaderCommonBean" />
+	</bean>
+
+	<!-- ############ DISCARDS RELATED BEANS ################  -->
+	<bean id="DiscardDataManager" class="com.cha.allen.app.webapps.manager.DiscardDataManagerImpl">
+  		<property name="discardDataDao" ref="DiscardDataDaoBean"/>
+  		
+  	</bean>	
+  	
+	<bean id="DiscardDropDownManager" class="com.cha.allen.app.webapps.manager.DiscardDropDownManagerImpl">
+  		<property name="discardDataDao" ref="DiscardDataDaoBean"/>
+  		
+  	</bean>	
+  	
+	<bean id="DiscardDataDaoBean"
+		class="com.cha.allen.app.webapps.dao.DiscardDataDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sqlLoader" ref="SqlLoaderBean" />
+	</bean>
+
+	<!-- ############ STATIC DATA RELATED BEANS ################  -->
+	<bean id="StaticDataManagerBean"
+		class="com.cha.allen.app.webapps.manager.StaticDataManagerImpl">
+		<property name="staticDataDao" ref="staticDataDaoBean" />
+		<property name="policyDao" ref="policyDaoBean" />
+		<property name="staticDataMapping" ref="staticDataMappingBean" />
+	</bean>
+	<bean id="StaticDataUnmanagedManagerBean" class="com.cha.allen.app.webapps.manager.StaticDataUnmanagedManagerImpl">
+			<property name="staticDataDao" ref="staticDataUnmanagedDaoBean"/>
+			<property name="policyDao" ref="policyDaoBean"/>
+			<property name="staticDataMapping" ref="staticDataUnmanagedMappingBean"/>
+		</bean>
+		<bean id="staticDataUnmanagedDaoBean" class="com.cha.allen.app.webapps.dao.StaticDataUnmanagedDaoImpl">
+			<property name="dataSource" ref="dataSource"/>
+			<property name="sqlLoader" ref="SqlLoaderBean"/>
+		</bean>
+	<bean id="staticDataDaoBean" class="com.cha.allen.app.webapps.dao.StaticDataDaoImpl">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="sqlLoader" ref="SqlLoaderBean"/>
+	</bean>
+
+
+	<bean id="StaticDataViewHelper"
+		class="com.cha.allen.app.webapps.web.viewhelper.StaticDataViewHelper">
+		<property name="policyDao" ref="policyDaoBean" />
+		<property name="staticDataDao" ref="staticDataDaoBean" />
+	</bean>
+
+	 <!-- ############ ANALYTICS BEAN ################  -->
+    
+    <bean id="AnalyticManager" class="com.cha.allen.app.webapps.manager.AnalyticManagerImpl">
+  		<property name="analyticDao" ref="AnalyticDaoBean"/>
+  		
+  	</bean>	
+	<bean id="AnalyticDaoBean" class="com.cha.allen.app.webapps.dao.AnalyticDaoImpl">
+  		<property name="dataSource" ref="dataSource"/>
+  		<property name="sqlLoader"  ref="SqlLoaderBean"/>
+  		<property name="analyticConfiguration"  ref="AnalyticConfigLoader"/>
+  	</bean>	
+
+  <!-- ############ ANALYTICS BEAN ################  -->
+	
+  <!-- ####### TOP OF THE HOUSE ###### -->
+	
+	<bean id="TopOfTheHousePolicyManager"
+		class="com.cha.allen.app.webapps.manager.TopOfTheHousePolicyManagerImpl">
+		<property name="topOfTheHouseDao" ref="TopOfTheHouseDao" />
+	</bean>
+
+	<bean id="TopOfTheHouseDao"
+		class="com.cha.allen.app.webapps.dao.TopOfTheHouseDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sqlLoader" ref="SqlLoaderBean" />
+	</bean>
+	<!-- ########DATABASE CONFIGURATIONS#################### -->
+	<!--  	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="${jndi_name}"/>
+		</bean>
+	-->
+	<bean id="propertyConfigurer"
+      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<property name="locations">
+		<list>
+			<value>classpath:app.properties</value>
+			<value>classpath:jdbc.properties</value>
+			<value>classpath:ldap_config.properties</value>
+		</list>
+	</property>
+    </bean>
+
+
+	
+	<bean id="dataSource"
+		class="com.cha.allen.app.webapps.dao.utility.BasicDataSourceUtility"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc_driver}" />
+		<property name="url" value="${jdbc_url}" />
+		<property name="username" value="${jdbc_username}" />
+		<property name="password" value="${jdbc_password}" />
+	</bean>
+	
+	<bean id="singleConnectionDataSource"
+		class="com.cha.allen.app.webapps.dao.utility.SingleDataSourceUtility"
+		destroy-method="close" scope="prototype">
+		<property name="driverClassName" value="${jdbc_driver}" />
+		<property name="url" value="${jdbc_url}" />
+		<property name="username" value="${jdbc_username}" />
+		<property name="password" value="${jdbc_password}" />
+	</bean>
+ 
+
+	<!-- ######### LOGGING ASPECTS ############# -->
+	<bean id="LoggerBean"
+		class="com.cha.allen.app.common.logging.LoggerAspect">
+		<!-- execute before the transactional advice (hence the lower order number) -->
+		<property name="order" value="1" />
+	</bean>
+
+	<aop:config>
+		<aop:pointcut id="allMethods"
+			expression="execution(* com.cha.allen.app..*.*(..))" />
+
+		<aop:aspect id="LogMethodEntryExit" ref="LoggerBean">
+			<aop:around pointcut-ref="allMethods"
+				method="doMethodEntryAndExitProfiling" />
+		</aop:aspect>
+
+
+		<aop:aspect id="LogMethodExitAfterThrowing" ref="LoggerBean">
+			<aop:after-throwing pointcut-ref="allMethods"
+				method="doExceptionLogging" throwing="throwable" />
+		</aop:aspect>
+	</aop:config>
+
+	<!-- ######### TRANSACTION MANAGEMENT ################### -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- the transactional advice -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<!-- the transactional semantics... -->
+		<tx:attributes>
+			<!-- all methods starting with 'get' are read-only -->
+			<tx:method name="get*" read-only="true" />
+			<!-- other methods use the default transaction settings (see below) -->
+			<tx:method name="*" read-only="false" isolation="READ_COMMITTED" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- Notification Beans used in common -->
+ 
+	 <bean id="NotificationDao" class="com.cha.allen.app.common.dao.NotificationDaoImpl">
+	  	<property name="dataSource" ref="dataSource"/>
+	  	<property name = "sqlLoader" ref = "SqlLoaderCommonBean"/>
+	  </bean>
+  
+  	 <bean id="NotificationManager" class="com.cha.allen.app.common.manager.NotificationManagerImpl">
+	  	<property name="notificationDao" ref="NotificationDao"/>
+	  </bean>
+	  
+	  
+	<!-- ensure that the above transactional advice runs for any execution
+		of an operation defined by the Manager classes -->
+	<aop:config>
+		<aop:pointcut id="managerOperations"
+			expression="execution(* com.cha.allen.app.webapps.manager.*Impl.*(..))" />
+		<!-- will execute after the Logging advice (c.f. the order attribute). order value is higher than the Logging aspect -->
+		<aop:advisor advice-ref="txAdvice"
+			pointcut-ref="managerOperations" order="2" />
+	</aop:config>
+	
+	<bean id="webLoggerBean" class="com.cha.allen.app.common.logging.Logger" scope="singleton">
+	  </bean>
+	
+	<!-- Bulk Data Export Related Beans -->
+	
+		<bean id="BulkDataExportManagerBean"
+		class="com.cha.allen.app.webapps.manager.BulkDataExportManagerImpl" scope="prototype">
+		<property name="bulkDataExportDao" ref="BulkDataExportDaoBean" />
+		<property name="policyDao" ref="policyDaoBean" />
+	</bean>
+	
+	<bean id="BulkDataExportDaoBean"
+		class="com.cha.allen.app.webapps.dao.BulkDataExportDaoImpl" scope="prototype">
+		<property name="dataSource" ref="singleConnectionDataSource" />
+		<property name="sqlLoader" ref="SqlLoaderBean" />
+	</bean>
+	<!-- ############################ -->
+</beans>
+
+

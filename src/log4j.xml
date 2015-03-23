@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
+ 
+   <appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+      <param name="Threshold" value="DEBUG" />
+      <layout class="org.apache.log4j.PatternLayout">
+         <param name="ConversionPattern" value="%d %-5p  [%c{1}] %m %n" />
+      </layout>
+   </appender>
+
+   <appender name="APP_LOG_FILE_webappsWEB" class="org.apache.log4j.RollingFileAppender">
+      <param name="Threshold" value="DEBUG" />
+      <param name="File" value="/appFileRepository/appWeb_log/appWeb.log"/>
+        <param name="MaxBackupIndex" value="5"/>
+		<param name="MaxFileSize" value="20MB"/>
+        <param name="Append" value="true"/>
+      <layout class="org.apache.log4j.PatternLayout">
+         <param name="ConversionPattern" value="%d %-5p  [%c{1}] %m %n" />
+      </layout>
+   </appender>
+ 
+    <!-- This is the Logger for application -->
+   <logger name="com.allen.cha.app.webapps.web" additivity="false" >
+      <level value="DEBUG" />
+      <appender-ref ref="consoleAppender"/>
+      <appender-ref ref="APP_LOG_FILE_webappsWEB"/>
+   </logger>
+
+    <!-- This is the Logger for EnTRAC application -->
+    <logger name="com.allen.cha.app.webapps.dao" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="APP_LOG_FILE_webappsDAO"/>
+		<appender-ref ref="consoleAppender"/>		
+    </logger>
+
+    <appender name="APP_LOG_FILE_webappsDAO" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="/appFileRepository/appWeb_log/appwebapps.log"/>
+        <param name="MaxBackupIndex" value="5"/>
+		<param name="MaxFileSize" value="10MB"/>
+        <param name="Append" value="true"/>
+        <!-- Set the threshold level for this appender -->
+        <param name="Threshold" value="DEBUG"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss} %-5p %m%n"/>
+        </layout>
+    </appender>
+ 
+</log4j:configuration>
